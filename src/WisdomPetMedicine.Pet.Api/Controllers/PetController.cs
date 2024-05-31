@@ -12,10 +12,10 @@ namespace WisdomPetMedicine.Pet.Api.Controllers
     public class PetController : ControllerBase
     {
         private readonly PetApplicationService petApplicationService;
-        private readonly ILogger<PetController> logger;
+        private readonly ILogger<PetQueryController> logger;
 
         public PetController(PetApplicationService petApplicationService,
-                             ILogger<PetController> logger)
+                             ILogger<PetQueryController> logger)
         {
             this.petApplicationService = petApplicationService;
             this.logger = logger;
@@ -68,6 +68,21 @@ namespace WisdomPetMedicine.Pet.Api.Controllers
 
         [HttpPut("color")]
         public async Task<IActionResult> Put(SetColorCommand command)
+        {
+            try
+            {
+                await petApplicationService.HandleCommandAsync(command);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex.Message);
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPut("dateofbirth")]
+        public async Task<IActionResult> Put(SetDateOfBirthCommand command)
         {
             try
             {
