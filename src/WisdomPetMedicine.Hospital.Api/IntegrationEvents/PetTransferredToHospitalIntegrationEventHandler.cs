@@ -8,6 +8,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using WisdomPetMedicine.Hospital.Api.Infrastructure;
 using WisdomPetMedicine.Hospital.Api.IntegrationEvents;
+using WisdomPetMedicine.Hospital.Domain.Entities;
+using WisdomPetMedicine.Hospital.Domain.Repositories;
+using WisdomPetMedicine.Hospital.Domain.ValueObjects;
 
 namespace WisdomPetMedicine.Rescue.Api.IntegrationEvents
 {
@@ -18,14 +21,17 @@ namespace WisdomPetMedicine.Rescue.Api.IntegrationEvents
 
         private readonly IConfiguration configuration;
         private readonly ILogger<PetTransferredToHospitalIntegrationEventHandler> logger;
+        private readonly IPatientAggregateStore patientAggregateStore;
         private readonly IServiceScopeFactory serviceScopeFactory;
 
         public PetTransferredToHospitalIntegrationEventHandler(IConfiguration configuration, 
             ILogger<PetTransferredToHospitalIntegrationEventHandler> logger,
+            IPatientAggregateStore patientAggregateStore,
             IServiceScopeFactory serviceScopeFactory)
         {
             this.configuration = configuration;
             this.logger = logger;
+            this.patientAggregateStore = patientAggregateStore;
             this.serviceScopeFactory = serviceScopeFactory;
 
             client = new ServiceBusClient(configuration["ServiceBus:ConnectionString"]);
@@ -56,6 +62,10 @@ namespace WisdomPetMedicine.Rescue.Api.IntegrationEvents
                 dbContext.PatientsMetadata.Add(theEvent);
                 await dbContext.SaveChangesAsync();
             }
+
+            var patientId = PatientId.Create(theEvent.Id);
+            var patient = new Patient(patientId);
+            await patientAggregateStore.SaveAsync(patient);
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)

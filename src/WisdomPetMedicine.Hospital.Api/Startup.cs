@@ -6,6 +6,8 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using WisdomPetMedicine.Hospital.Api.ApplicationServices;
 using WisdomPetMedicine.Hospital.Api.Infrastructure;
+using WisdomPetMedicine.Hospital.Domain.Repositories;
+using WisdomPetMedicine.Hospital.Infrastructure;
 using WisdomPetMedicine.Rescue.Api.IntegrationEvents;
 
 namespace WisdomPetMedicine.Hospital.Api
@@ -22,6 +24,7 @@ namespace WisdomPetMedicine.Hospital.Api
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddHospitalDb(Configuration);
+            services.AddSingleton<IPatientAggregateStore, PatientAggregateStore>();
             services.AddScoped<HospitalApplicationService>();
             services.AddControllers();
             services.AddHostedService<PetTransferredToHospitalIntegrationEventHandler>();
