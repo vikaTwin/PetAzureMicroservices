@@ -2,8 +2,9 @@ using Dapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 
-namespace WisdomPetMedicine.RescueQuery.Api.Controllers
+namespace WisdomPetMedicine.RescueQuery.Api.Controllers.V1
 {
+    [ApiVersion("1.0")]
     [ApiController]
     [Route("[controller]")]
     public class RescueQueryController : ControllerBase

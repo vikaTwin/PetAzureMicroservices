@@ -28,8 +28,8 @@ namespace WisdomPetMedicine.Hospital.Infrastructure
                 }
             };
 
-            cosmosClient = new CosmosClient(connectionString, clientOptions);
-            patientContainer = cosmosClient.GetContainer(databaseId, containerId);
+            /*cosmosClient = new CosmosClient(connectionString, clientOptions);
+            patientContainer = cosmosClient.GetContainer(databaseId, containerId);*/
         }
 
         public async Task<Patient> LoadAsync(PatientId patientId)
@@ -39,7 +39,8 @@ namespace WisdomPetMedicine.Hospital.Infrastructure
             var aggregateId = $"Patient-{patientId.Value}";
             var sqlQueryText = $"SELECT * FROM c WHERE c.aggregateId = '{aggregateId}'";
             var queryDefinition = new QueryDefinition(sqlQueryText);
-            var queryResultSetIterator = patientContainer.GetItemQueryIterator<CosmosEventData>(queryDefinition);
+
+            /*var queryResultSetIterator = patientContainer.GetItemQueryIterator<CosmosEventData>(queryDefinition);
             var events = new List<CosmosEventData>();
             while (queryResultSetIterator.HasMoreResults)
             {
@@ -56,10 +57,12 @@ namespace WisdomPetMedicine.Hospital.Infrastructure
                 var eventType = Type.GetType(assemblyQualifiedName);
                 var data = JsonConvert.DeserializeObject(e.Data, eventType);
                 return data as IDomainEvent;
-            });
+            });*/
 
+            
             var aggregate = new Patient();
-            aggregate.Load(domainEvents);
+            //aggregate.Load(domainEvents);
+            await Task.CompletedTask;
 
             return aggregate;
         }
@@ -82,11 +85,12 @@ namespace WisdomPetMedicine.Hospital.Infrastructure
                 return;
             }
 
-            foreach ( var change in changes )
+            await Task.CompletedTask;
+            /*foreach ( var change in changes )
             {
                 await patientContainer.CreateItemAsync(change);
             }
-            patient.ClearChanges();
+            patient.ClearChanges();*/
         }
     }
 }
